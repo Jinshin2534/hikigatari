@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* ---- ChordSheet styles ---- */
+.chord-sheet {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.chord-sheet .paragraph {
+  margin-bottom: 1.5rem;
+}
+
+.chord-sheet .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.chord-sheet .chord-lyrics-pair {
+  display: inline-flex;
+  flex-direction: column;
+  margin-right: 2px;
+}
+
+.chord-sheet .chord {
+  color: #7c3aed;
+  font-weight: 700;
+  font-size: 13px;
+  min-width: 1ch;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.chord-sheet .lyrics {
+  white-space: pre;
+}
+
+/* ---- Print ---- */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .chord-sheet {
+    font-size: 11pt;
+  }
+
+  .chord-sheet .chord {
+    color: black;
+    font-weight: 700;
+  }
+
+  @page {
+    margin: 1cm;
+  }
+}
