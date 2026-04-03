@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSong } from '../hooks/useSong';
 import { useSongs } from '../hooks/useSongs';
@@ -27,15 +27,19 @@ export function SongEditPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>('smart');
-  // モード切替時だけ SmartEditor を再初期化するためのキー
+  // モード切替 or 曲読み込み時に SmartEditor を再初期化するためのキー
   const [smartKey, setSmartKey] = useState(0);
+  const songInitialized = useRef(false);
 
   useEffect(() => {
-    if (song) {
+    if (song && !songInitialized.current) {
+      songInitialized.current = true;
       setTitle(song.title);
       setArtist(song.artist);
       setOriginalKey(song.original_key);
       setContent(song.content);
+      // 曲データ読み込み後に SmartEditor を正しい内容で初期化
+      setSmartKey(k => k + 1);
     }
   }, [song]);
 
