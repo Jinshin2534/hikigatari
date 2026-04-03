@@ -27,7 +27,24 @@ function charWidth(char: string): string {
   return isWide(char) ? '1.5rem' : '0.9rem';
 }
 
-export function parseToLines(content: string): LineDatum[] {
+// コンテンツから使われているコードを出現順に抽出して進行を復元
+function extractProgressionFromContent(content: string): string[] {
+  if (!content.trim()) return ['Am', 'F', 'C', 'G'];
+  const lines = parseToLinesInternal(content);
+  const seen = new Set<string>();
+  const progression: string[] = [];
+  for (const line of lines) {
+    for (const { chord } of [...line.chords].sort((a, b) => a.pos - b.pos)) {
+      if (!seen.has(chord)) {
+        seen.add(chord);
+        progression.push(chord);
+      }
+    }
+  }
+  return progression.length > 0 ? progression : ['Am', 'F', 'C', 'G'];
+}
+
+function parseToLinesInternal(content: string): LineDatum[] {
   if (!content.trim()) return [{ text: '', chords: [] }];
   return content.split('\n').map(line => {
     const chords: ChordPlacement[] = [];
@@ -48,6 +65,10 @@ export function parseToLines(content: string): LineDatum[] {
     }
     return { text, chords };
   });
+}
+
+export function parseToLines(content: string): LineDatum[] {
+  return parseToLinesInternal(content);
 }
 
 export function toChordPro(lines: LineDatum[]): string {
@@ -153,7 +174,9 @@ interface SmartEditorProps {
 }
 
 export function SmartEditor({ initialContent, onChange }: SmartEditorProps) {
-  const [progression, setProgression] = useState<string[]>(['Am', 'F', 'C', 'G']);
+  const [progression, setProgression] = useState<string[]>(() =>
+    extractProgressionFromContent(initialContent)
+  );
   const [newChordInput, setNewChordInput] = useState('');
   const [lines, setLines] = useState<LineDatum[]>(() => parseToLines(initialContent));
   const [chordsPerLine, setChordsPerLine] = useState(2);
